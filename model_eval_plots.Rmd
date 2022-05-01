@@ -1,0 +1,68 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+library(tidyverse)
+library(ggplot2)
+```
+
+```{r}
+model = "Random Forest Classifier"
+data = read_csv("C:/Users/kingl/Box/big_data_final_project/predictions_data/rfc_predictions.csv")
+```
+
+```{r}
+plot_data <- function(dataset) {
+  df = dataset %>% select(star_rating, prediction) %>% mutate(correct=ifelse(prediction==star_rating,1,0))
+  
+  #plot 1
+  correct_obs = df %>% group_by(star_rating) %>% summarise(pct_correct = mean(correct))
+  
+  #plot 2
+  temp1 = df %>% filter(correct==0) %>% count(star_rating)
+  temp2 = df %>% filter(correct==0) %>% count(star_rating, prediction)
+  incorrect_obs = temp1 %>% left_join(temp2, by = "star_rating") %>% mutate(pct = n.y/n.x) %>% 
+    select(star_rating, prediction, pct)
+  
+  return(list(correct_obs, incorrect_obs))
+}
+```
+
+```{r}
+plot1 = plot_data(data)[[1]]
+plot2 = plot_data(data)[[2]]
+```
+
+```{r}
+plot1 %>% 
+  ggplot(aes(x=star_rating, y=pct_correct)) + 
+  geom_bar(stat="identity", fill='#C79FEF', color='#C79FEF') +
+  theme_bw() +
+  ylim(0, 1) + 
+  labs(title="Percentage of Correct Predictions for Each Star Value",
+       subtitle = model,
+       y="Percent",
+       x="Star Value")
+```
+
+
+```{r}
+plot2 %>% 
+  mutate(prediction = as.factor(prediction)) %>% 
+  ggplot(aes(x=star_rating, y=pct, fill=prediction)) + 
+  geom_bar(stat="identity", position = "dodge") +
+  scale_fill_manual(values = c('1' = '#069AF3',
+                               '2' = '#7BC8F6',
+                               '3' = '#FF00FF',
+                               '4' = '#9A0EEA',
+                               '5' = '#C79FEF')) +
+  ylim(0, 1) +
+  theme_bw() +
+  labs(title="Percentage of Incorrect Predictions for Each Star Value",
+       subtitle = model,
+       y="Percent",
+       x="Star Value",
+       fill="Prediction")
+```
