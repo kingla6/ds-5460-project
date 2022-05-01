@@ -1,6 +1,8 @@
 # ds-5460-project: Amazon Review Star Rating Prediction
 Repo for Big Data Scaling Final project. Please see the repo directory to navigate to specific parts of the project.
 
+Work conducted by Logan King, Lori Chiu, and Sarah Torrence.
+
 Data available at: https://www.kaggle.com/datasets/cynthiarempel/amazon-us-customer-reviews-dataset
 
 # Repo Directory
